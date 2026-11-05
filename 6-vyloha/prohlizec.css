@@ -1,0 +1,54 @@
+/* Prohlížeč fotek návrhu 6 — pasparta na celé obrazovce, klik do fotky = celá fotka, přiblížení až na přání.
+   Vybral majitel 5. 11. 2026 (varianta 4 z lupa-varianty.html). Na samotnou fotku se nesahá, mění se jen okolí. */
+:root{--stena:#fff;--pasparta:#fff;--ram:#111}
+:root[data-vzhled=tmavy]{--stena:#000;--pasparta:#fff;--ram:#fff}
+
+.pv{position:fixed;inset:0;z-index:100;display:grid;grid-template-rows:auto 1fr auto;background:var(--stena);color:var(--fg);opacity:0;transition:opacity .35s ease}
+.pv.on{opacity:1}
+.pv[hidden]{display:none}
+.pv-hore,.pv-dole{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(16px,3vw,40px);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.pv-poc{font:600 15px/1 Archivo,sans-serif;font-stretch:125%;letter-spacing:.08em}
+.pv-rub{color:var(--muted)}
+.pv button{font:inherit;color:inherit;background:none;border:0;padding:10px 0;min-height:44px;cursor:pointer;letter-spacing:inherit;text-transform:inherit}
+.pv button:hover{text-decoration:underline;text-underline-offset:6px}
+.pv-scena{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:0}
+.pv-dilo{margin:0;position:relative;background:var(--pasparta);box-shadow:0 0 0 1px var(--ram),0 28px 60px -34px rgba(0,0,0,.45);transition:opacity .35s ease}
+.pv-dilo img{display:block;cursor:zoom-in;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.pv-stitek{position:absolute;left:0;top:100%;margin-top:14px;font-size:13px;line-height:1.45;color:var(--muted);white-space:nowrap}
+.pv-stitek b{display:block;color:var(--fg);font-weight:500}
+/* Pozvánka k fotce na celé obrazovce: vždy vidět pod paspartou vpravo, text podle zařízení */
+.pv .pozvanka{position:absolute;right:0;top:100%;margin-top:10px;display:inline-flex;align-items:center;gap:8px;padding:6px 0;min-height:0;font-size:12.5px;letter-spacing:.12em}
+.pozvanka svg{width:18px;height:18px;flex:none}
+
+/* Samotná fotka přes celou obrazovku; přiblížení tlačítky, kolečkem, dvěma prsty nebo dvojklikem */
+.dt{position:fixed;inset:0;z-index:110;background:var(--stena);overflow:hidden;touch-action:none;opacity:0;transition:opacity .3s ease;-webkit-user-select:none;user-select:none}
+.dt.on{opacity:1}
+.dt.lze-tahnout{cursor:grab}
+.dt.tahne{cursor:grabbing}
+.dt-img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;will-change:transform;-webkit-user-drag:none}
+.dt-ovl{position:absolute;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:4px;background:var(--stena);color:var(--fg);box-shadow:0 0 0 1px var(--line),0 10px 30px rgba(0,0,0,.18);font-size:13px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.dt-ovl button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;min-width:44px;min-height:44px;padding:0 14px;letter-spacing:inherit;text-transform:inherit}
+.dt-ovl button:hover{text-decoration:underline;text-underline-offset:6px}
+.dt-ovl button:disabled{opacity:.3;cursor:default;text-decoration:none}
+.dt-ovl .dt-zpet{border-left:1px solid var(--line);margin-left:4px;padding-left:16px}
+.dt-uroven{min-width:88px;text-align:center;font-variant-numeric:tabular-nums}
+.dt-rada{position:absolute;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);margin:0;max-width:calc(100vw - 32px);box-sizing:border-box;padding:9px 14px;background:var(--fg);color:var(--bg);font-size:13.5px;line-height:1.4;text-align:center;transition:opacity .6s ease}
+.dt-rada.pryc{opacity:0}
+.dt-mekke{position:absolute;left:16px;top:max(16px,env(safe-area-inset-top));margin:0;font-size:12px;color:var(--muted);background:var(--stena);padding:4px 8px}
+.dt-mapa{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:clamp(84px,12vw,150px);background:var(--pasparta);padding:5px;box-shadow:0 0 0 1px var(--ram),0 10px 30px rgba(0,0,0,.25);cursor:crosshair;overflow:hidden;transition:opacity .3s}
+.dt-mapa img{display:block;width:100%;height:auto;pointer-events:none}
+.dt-mapa i{position:absolute;box-shadow:0 0 0 1px #fff,0 0 0 2px var(--film),0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+.dt-mapa.skryta{opacity:0;pointer-events:none}
+@media (max-width:700px){.pv-hore,.pv-dole{padding:10px 16px}}
+/* úzký telefon: pozvánka pod štítkem, aby se nepřekrývaly */
+@media (max-width:480px){.pv .pozvanka{right:auto;left:0;margin-top:56px}}
+@media (max-width:560px){
+  .dt-ovl{left:12px;right:12px;transform:none;justify-content:space-between;letter-spacing:.04em;font-size:12.5px}
+  .dt-ovl button{padding:0 6px}
+  .dt-ovl .dt-zpet{padding-left:12px}
+  .dt-uroven{min-width:0;flex:1}
+  .dt-rada{width:calc(100vw - 32px)}
+  .dt-mapa{bottom:calc(max(16px,env(safe-area-inset-bottom)) + 64px)}
+  .dt-mekke{left:16px;right:16px;top:auto;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 64px);margin-right:clamp(84px,12vw,150px)}
+}
+@media (prefers-reduced-motion:reduce){.pv,.pv-dilo,.dt,.dt-rada,.dt-mapa{transition:none}}

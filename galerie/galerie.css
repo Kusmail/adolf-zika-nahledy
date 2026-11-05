@@ -1,0 +1,95 @@
+/* Prohlížení fotografií — sdílené styly variant (navrhy/galerie/).
+   Barvy stránky: --bg, --fg, --muted, --line, --tile; prohlížeč má vlastní --zed (stěna) a --txt. */
+:root{--bg:#f4f3f0;--fg:#141414;--muted:#6b6b6b;--line:#dcdad4;--tile:#e4e2dd}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html.g-zamceno{overflow:hidden}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.55 Inter,system-ui,-apple-system,sans-serif}
+a{color:inherit}
+:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+
+/* Lišta variant */
+.g-lista{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;padding:8px clamp(16px,3vw,32px) 0;background:var(--bg);border-bottom:1px solid var(--line);font-size:13px}
+.g-lista .g-zpet{text-decoration:none;color:var(--muted);white-space:nowrap;min-height:36px;display:inline-flex;align-items:center}
+.g-lista .g-zpet:hover{color:var(--fg)}
+.g-lista b{font-weight:600;margin-right:auto;font-size:14px}
+.g-lista label{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.g-lista select{font:inherit;color:var(--fg);background-color:transparent;border:1px solid var(--line);border-radius:0;padding:6px 26px 6px 9px;min-height:36px;-webkit-appearance:none;appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+.g-lista select option{color:#111;background:#fff}
+.g-info{flex-basis:100%;margin:0;padding:6px 0 8px;font-size:12px;line-height:1.4;color:var(--muted)}
+@media (max-width:640px){
+  .g-lista{gap:6px 10px;padding-bottom:8px}
+  .g-lista .g-zpet{min-height:32px;font-size:0}
+  .g-lista .g-zpet::before{content:"←";font-size:18px;padding-right:4px}
+  .g-lista b{font-size:13px}
+  .g-lista label span,.g-info{display:none}
+  .g-lista label{flex:1 1 30%}
+  .g-lista select{width:100%}
+}
+
+/* Mřížka v řadách */
+.g-mrizka{padding:clamp(8px,2vw,24px)}
+.g-rada{display:flex}
+.g-dl{display:block;flex:0 0 auto;background:var(--tile);overflow:hidden;cursor:zoom-in}
+.g-dl img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease}
+.g-dl img.nacteno{opacity:1}
+/* Efekt reflektor v mřížce: najetím myši ztlumí ostatní fotky */
+@media (hover:hover){
+  .ztlum .g-mrizka:hover .g-dl img.nacteno{opacity:.22}
+  .ztlum .g-mrizka .g-dl:hover img.nacteno{opacity:1}
+}
+
+/* ---------- Prohlížeč ---------- */
+.g-lb{position:fixed;inset:0;z-index:1000;display:none;overflow:hidden;--zed:#0b0b0b;--txt:#e8e8e8;--txt2:#8f8f8f;color:var(--txt);font:400 13px/1.45 Inter,system-ui,-apple-system,sans-serif}
+.g-lb.on{display:block}
+.g-lb.trvale{top:var(--g-lista,57px);z-index:40}
+.g-lb[data-pozadi=seda]{--zed:#3e3e3e;--txt:#f2f2f2;--txt2:#b9b9b9}
+.g-lb[data-pozadi=bila]{--zed:#f4f3ef;--txt:#161616;--txt2:#6d6d6d}
+.g-lb[data-efekt=reflektor]{--zed:#030303;--txt:#dcd6cc;--txt2:#7f796f}
+.g-zed{position:absolute;inset:0;background:var(--zed);opacity:0;transition:opacity .42s ease,background-color .5s ease}
+.g-lb[data-efekt=reflektor] .g-zed{transition:opacity .8s ease}
+.g-lb.vidno .g-zed{opacity:1}
+.g-svetlo{position:absolute;pointer-events:none;opacity:0;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,244,224,.19),rgba(255,244,224,.07) 58%,rgba(255,244,224,0));
+  transition:opacity 1.2s ease .35s,left .4s ease,top .4s ease,width .4s ease,height .4s ease}
+.g-lb[data-efekt=reflektor].vidno .g-svetlo{opacity:1}
+.g-scena{position:absolute;inset:0;touch-action:pinch-zoom;-webkit-user-select:none;user-select:none}
+.g-foto{position:absolute;display:block;max-width:none;cursor:zoom-in;-webkit-user-drag:none;-webkit-touch-callout:none}
+.g-lb.lupa .g-foto{cursor:grab}
+.g-lb.lupa .g-foto:active{cursor:grabbing}
+.g-lb.hned,.g-lb.hned *{transition:none!important}
+
+.g-ovl{position:absolute;z-index:2;transition:opacity .35s ease}
+.g-lb.klid .g-ovl{opacity:0}
+.g-lb.trvale.klid .g-dolni{opacity:1}
+.g-lb.klid{cursor:none}
+.g-horni{top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:2px;padding:6px 8px 6px 18px}
+.g-pocet{margin-right:auto;color:var(--txt2);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.g-b{background:none;border:0;color:var(--txt);min-width:44px;min-height:44px;padding:0 10px;font:400 13px/1 Inter,system-ui,sans-serif;cursor:pointer;opacity:.75;display:inline-flex;align-items:center;justify-content:center}
+.g-b:hover,.g-b:focus-visible{opacity:1}
+.g-x{font-size:30px;font-weight:300}
+.g-lupa{letter-spacing:.04em}
+.g-lupa[aria-pressed=true]{opacity:1;text-decoration:underline;text-underline-offset:4px}
+.g-pozadi i{display:block;width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+.g-lb[data-efekt=reflektor] .g-pozadi{display:none}
+.g-sip{top:50%;transform:translateY(-50%);font-size:46px;font-weight:200;width:64px;height:110px}
+.g-p{left:6px}.g-n{right:6px}
+.g-lb.lupa .g-sip,.g-lb.lupa .g-dolni{opacity:0;pointer-events:none}
+.g-dolni{left:0;right:0;bottom:0;padding:0 18px 12px;text-align:center;pointer-events:none}
+.g-dolni>*{pointer-events:auto}
+.g-popis{margin:0;letter-spacing:.04em}
+.g-poznamka{margin:2px 0 0;color:var(--txt2);font-size:12px;min-height:1.45em}
+.g-pas{display:flex;gap:6px;overflow-x:auto;padding:12px 2px 4px;margin:6px auto 0;max-width:100%;width:max-content;scrollbar-width:none}
+.g-pas::-webkit-scrollbar{display:none}
+.g-pol{flex:0 0 auto;padding:0;border:0;background:none;cursor:pointer;opacity:.42;transition:opacity .2s ease;position:relative}
+.g-pol img{display:block;height:56px;width:auto}
+.g-pol:hover,.g-pol:focus-visible{opacity:.8}
+.g-pol.akt{opacity:1}
+.g-pol.akt::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;background:var(--txt)}
+.g-hlaska{position:absolute;left:50%;top:62px;transform:translateX(-50%);z-index:3;margin:0;padding:8px 14px;max-width:min(92vw,520px);text-align:center;
+  background:rgba(18,18,18,.88);color:#f2f2f2;font-size:13px;opacity:0;transition:opacity .25s ease;pointer-events:none}
+.g-hlaska.on{opacity:1}
+.g-lb.nacita::after{content:"Načítám plné rozlišení…";position:absolute;right:16px;bottom:14px;z-index:3;font-size:12px;color:var(--txt2)}
+@media (max-width:699px),(hover:none){.g-sip{display:none}}
+@media (max-width:699px){.g-horni{padding-left:14px}.g-lupa{padding:0 6px}}
